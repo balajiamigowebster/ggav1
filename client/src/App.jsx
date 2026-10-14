@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Link, NavLink, Route, Routes, useParams } from 'react-router-dom';
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
@@ -440,19 +440,517 @@ const defaultServices = [
  {slug:'fire-alarm-systems',title:'Fire Alarm Systems',summary:'Fire-alarm system design coordination for building safety.'},
  {slug:'hvac-design',title:'HVAC Design',summary:'HVAC design coordination based on project-specific requirements.'}
 ];
-const defaultProjects = [
- {title:'Tata Electronics Dormitory Development',location:'Hosur',area_sqft:'15,00,000'},
- {title:'Humming Tree Residential Development',location:'Perumbakkam, Chennai',area_sqft:'3,50,000'},
- {title:'Casagrande Residential Building',location:'Sulur, Coimbatore',area_sqft:'2,00,000'}
+const ggaProjects = [
+  {
+    id: 1,
+    slNo: 1,
+    title: 'The Proposed Dormitory development "Tata Electronics"',
+    client: 'Tata Electronics',
+    location: 'Hosur, Tamil Nadu',
+    area_sqft: '15,00,000',
+    areaNumber: 1500000,
+    category: 'Industrial',
+    categoryLabel: 'Industrial & High-Tech Campus',
+    status: 'Active / Current',
+    scope: ['Electrical HT/LT', 'Substation', 'Fire Fighting', 'Hydraulics', 'Sanitary Plumbing'],
+    description: 'High-density multi-building residential & facilities campus for industrial workforce, featuring coordinated sub-stations, high-capacity pumping mains, fire hydrants, and advanced life-safety networks.',
+    featured: true,
+    tag: 'Mega Campus'
+  },
+  {
+    id: 2,
+    slNo: 2,
+    title: 'The proposed Residential Development "Humming Tree"',
+    client: 'Residential Developers',
+    location: 'Perumbakkam, Chennai',
+    area_sqft: '3,50,000',
+    areaNumber: 350000,
+    category: 'Residential',
+    categoryLabel: 'Premium High-Rise Residential',
+    status: 'Active / Current',
+    scope: ['Plumbing & Drainage', 'Electrical Distribution', 'Fire Alarm', 'STP Integration'],
+    description: 'Integrated MEP services documentation for multi-tower residential project, featuring rainwater harvesting recharge wells, central water treatment, and architectural riser alignments.',
+    featured: true,
+    tag: 'Residential Towers'
+  },
+  {
+    id: 3,
+    slNo: 3,
+    title: 'The Proposed residential Building "Casagrande"',
+    client: 'Casagrand Builders',
+    location: 'Sulur, Coimbatore',
+    area_sqft: '2,00,000',
+    areaNumber: 200000,
+    category: 'Residential',
+    categoryLabel: 'Modern Residential Complex',
+    status: 'Active / Current',
+    scope: ['Internal Plumbing', 'External Drainage', 'Electrical Earthing', 'Fire Hydrants'],
+    description: 'Coordinated services layout and GFC drawings for residential housing blocks, emphasizing cost-effective plumbing runs, hydraulic balance, and statutory firefighting clearances.',
+    featured: false,
+    tag: 'Housing Complex'
+  },
+  {
+    id: 4,
+    slNo: 4,
+    title: 'The Proposed residential Building "Casagrande"',
+    client: 'Casagrand Builders',
+    location: 'Korattur, Chennai',
+    area_sqft: '5,75,000',
+    areaNumber: 575000,
+    category: 'Residential',
+    categoryLabel: 'Multi-Storey Residential Township',
+    status: 'Active / Current',
+    scope: ['Plumbing Risers', 'Fire Sprinklers & Hydrants', 'Electrical Panels', 'DG Backup'],
+    description: 'Comprehensive MEP engineering for premium high-rise residential towers, incorporating clash-free shaft coordination, automated booster pumping systems, and STP treated water reuse networks.',
+    featured: true,
+    tag: 'Township Project'
+  },
+  {
+    id: 5,
+    slNo: 5,
+    title: 'The Proposed residence Building "Casagrande"',
+    client: 'Casagrand Builders',
+    location: 'Saravanampatti, Coimbatore',
+    area_sqft: '3,75,500',
+    areaNumber: 375500,
+    category: 'Residential',
+    categoryLabel: 'Gated Residential Community',
+    status: 'Active / Current',
+    scope: ['Domestic Plumbing', 'Storm Water Drainage', 'Power Reticulation', 'Fire Safety'],
+    description: 'Full-scope building services coordination for contemporary apartment community, designed for sustainable water management, energy-efficient illumination, and reliable power distribution.',
+    featured: false,
+    tag: 'Gated Community'
+  },
+  {
+    id: 6,
+    slNo: 6,
+    title: 'The Proposed Police station Building',
+    client: 'Public Works & Civic Infrastructure',
+    location: 'Kelambakkam, Chennai',
+    area_sqft: '25,000',
+    areaNumber: 25000,
+    category: 'Institutional',
+    categoryLabel: 'Civic & Public Safety Facility',
+    status: 'Active / Current',
+    scope: ['24/7 Essential Power Backup', 'Sanitary Infrastructure', 'Fire Safety', 'Surveillance Pathways'],
+    description: 'Civic safety facility engineering with continuous emergency power back-up, robust public-health plumbing fixtures, lightning protection, and integrated communication conduit systems.',
+    featured: false,
+    tag: 'Civic Facility'
+  },
+  {
+    id: 7,
+    slNo: 7,
+    title: 'The Proposed development building "ICGS"',
+    client: 'Indian Coast Guard Station / Defence',
+    location: 'Ratnagiri, Goa',
+    area_sqft: '3,00,000',
+    areaNumber: 300000,
+    category: 'Institutional',
+    categoryLabel: 'Strategic Government & Defence Facility',
+    status: 'Active / Current',
+    scope: ['Mission-Critical Power', 'Coastal HVAC Coordination', 'Fire Pumping Mains', 'Heavy Drainage'],
+    description: 'Strategic defence facility MEP engineering with coastal corrosion-resistant specifications, uninterrupted standby DG synchronization, dedicated fire suppression pump houses, and high-security services routing.',
+    featured: true,
+    tag: 'Strategic Defence'
+  },
+  {
+    id: 8,
+    slNo: 8,
+    title: 'The proposed "INSTA" School building',
+    client: 'INSTA Educational Trust',
+    location: 'Kolathur, Chennai',
+    area_sqft: '3,50,000',
+    areaNumber: 350000,
+    category: 'Institutional',
+    categoryLabel: 'Educational & Institutional Campus',
+    status: 'Active / Current',
+    scope: ['Campus Power Distribution', 'Child-Safe Plumbing', 'Fire Alarm Systems', 'Ventilation'],
+    description: 'Specialized building services design for multi-block academic campus, prioritizing life-safety evacuation compliance, natural ventilation enhancement, and child-safe sanitary infrastructure.',
+    featured: false,
+    tag: 'Education Campus'
+  },
+  {
+    id: 9,
+    slNo: 9,
+    title: 'The Proposed S & P Office Building',
+    client: 'S & P Aspirational Spaces',
+    location: 'OMR, Chennai',
+    area_sqft: '35,000',
+    areaNumber: 35000,
+    category: 'Commercial',
+    categoryLabel: 'Corporate Office Building',
+    status: 'Active / Current',
+    scope: ['HVAC Coordination', 'Commercial Power Distribution', 'Lighting Design', 'Fire Alarms'],
+    description: 'Corporate headquarters MEP planning along Chennai’s IT corridor, featuring energy-conscious LED lighting controls, VRF air conditioning coordination, and structured low-voltage cabling pathways.',
+    featured: false,
+    tag: 'Corporate Office'
+  },
+  {
+    id: 10,
+    slNo: 10,
+    title: 'The Proposed residential apartment',
+    client: 'Urban Housing Development',
+    location: 'Korattur, Chennai',
+    area_sqft: '35,000',
+    areaNumber: 35000,
+    category: 'Residential',
+    categoryLabel: 'Urban Residential Apartments',
+    status: 'Active / Current',
+    scope: ['Domestic Plumbing', 'Electrical Metering Panels', 'Booster Pumps', 'Terrace Drainage'],
+    description: 'Compact urban apartment services design with space-optimized plumbing vertical shafts, individual utility metering distribution boards, and gravity-fed water supply networks.',
+    featured: false,
+    tag: 'Urban Housing'
+  },
+  {
+    id: 11,
+    slNo: 11,
+    title: 'The Proposed residential Development "RooHi"',
+    client: 'RooHi Living',
+    location: 'Saidapet, Chennai',
+    area_sqft: '25,000',
+    areaNumber: 25000,
+    category: 'Residential',
+    categoryLabel: 'Boutique Urban Residence',
+    status: 'Active / Current',
+    scope: ['Boutique Residence Electrical', 'Piping Networks', 'Rainwater Harvesting', 'Low Voltage'],
+    description: 'High-end urban dwelling building services, featuring tailored concealed sanitary installations, acoustic pipe insulation, smart home conduit provisions, and terrace rainwater detention.',
+    featured: false,
+    tag: 'Boutique Living'
+  }
 ];
+
+const defaultProjects = [
+  { title: 'The Proposed Dormitory development "Tata Electronics"', location: 'Hosur, Tamil Nadu', area_sqft: '15,00,000' },
+  { title: 'The Proposed residential Building "Casagrande"', location: 'Korattur, Chennai', area_sqft: '5,75,000' },
+  { title: 'The Proposed development building "ICGS"', location: 'Ratnagiri, Goa', area_sqft: '3,00,000' }
+];
+
+function ProjectsPage() {
+  const [activeCategory, setActiveCategory] = useState('All');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [viewMode, setViewMode] = useState('grid');
+  const [sortBy, setSortBy] = useState('area-desc');
+
+  useEffect(() => {
+    document.title = "Selected Projects | GGA MEP Design Consultants";
+  }, []);
+
+  const categories = [
+    { id: 'All', label: 'All Projects', count: ggaProjects.length },
+    { id: 'Residential', label: 'Residential', count: ggaProjects.filter((p) => p.category === 'Residential').length },
+    { id: 'Industrial', label: 'Industrial & Campuses', count: ggaProjects.filter((p) => p.category === 'Industrial').length },
+    { id: 'Institutional', label: 'Institutional & Civic', count: ggaProjects.filter((p) => p.category === 'Institutional').length },
+    { id: 'Commercial', label: 'Commercial', count: ggaProjects.filter((p) => p.category === 'Commercial').length }
+  ];
+
+  const filteredProjects = useMemo(() => {
+    return ggaProjects
+      .filter((project) => {
+        const matchesCategory = activeCategory === 'All' || project.category === activeCategory;
+        const q = searchQuery.toLowerCase().trim();
+        const matchesSearch = !q || (
+          project.title.toLowerCase().includes(q) ||
+          project.client.toLowerCase().includes(q) ||
+          project.location.toLowerCase().includes(q) ||
+          project.categoryLabel.toLowerCase().includes(q) ||
+          project.scope.some((s) => s.toLowerCase().includes(q))
+        );
+        return matchesCategory && matchesSearch;
+      })
+      .sort((a, b) => {
+        if (sortBy === 'area-desc') return b.areaNumber - a.areaNumber;
+        if (sortBy === 'area-asc') return a.areaNumber - b.areaNumber;
+        return a.slNo - b.slNo;
+      });
+  }, [activeCategory, searchQuery, sortBy]);
+
+  const totalFilteredArea = filteredProjects.reduce((sum, p) => sum + p.areaNumber, 0);
+
+  return (
+    <div className="projects-page-wrapper">
+      {/* Page Hero */}
+      <section className="page-hero">
+        <EngineeringBackground variant="page" />
+        <div className="container page-hero-inner">
+          <div>
+            <span className="eyebrow">
+              <span className="dot"></span> PROJECT EXPERIENCE PORTFOLIO
+            </span>
+            <h1>Selected Projects</h1>
+            <p>
+              Engineering excellence across 37,70,000+ sq.ft of residential, industrial, institutional, and commercial developments.
+            </p>
+          </div>
+          <PencilMark />
+        </div>
+      </section>
+
+      {/* Main Content Area */}
+      <section className="section projects-showcase-section">
+        <EngineeringBackground variant="light" />
+        <div className="container">
+          
+          {/* Executive Portfolio Stats Ribbon */}
+          <div className="projects-stats-ribbon">
+            <div className="project-stat-box">
+              <span className="stat-number">37.7L+</span>
+              <span className="stat-unit">SQ. FT</span>
+              <span className="stat-caption">Total Coordinated Area</span>
+            </div>
+            <div className="project-stat-sep" aria-hidden="true"></div>
+            <div className="project-stat-box">
+              <span className="stat-number">11</span>
+              <span className="stat-unit">CURRENT PROJECTS</span>
+              <span className="stat-caption">Active Engineering Portfolio</span>
+            </div>
+            <div className="project-stat-sep" aria-hidden="true"></div>
+            <div className="project-stat-box">
+              <span className="stat-number">4</span>
+              <span className="stat-unit">CORE SECTORS</span>
+              <span className="stat-caption">Residential, Industrial, Institutional, Commercial</span>
+            </div>
+            <div className="project-stat-sep" aria-hidden="true"></div>
+            <div className="project-stat-box">
+              <span className="stat-number">100%</span>
+              <span className="stat-unit">COORDINATED</span>
+              <span className="stat-caption">Clash-Free Design Delivery</span>
+            </div>
+          </div>
+
+          {/* Interactive Filter & View Toolbar */}
+          <div className="projects-toolbar">
+            <div className="toolbar-left">
+              <div className="category-tabs" role="tablist">
+                {categories.map((cat) => (
+                  <button
+                    key={cat.id}
+                    className={`cat-tab ${activeCategory === cat.id ? 'active' : ''}`}
+                    onClick={() => setActiveCategory(cat.id)}
+                    role="tab"
+                    aria-selected={activeCategory === cat.id}
+                  >
+                    <span>{cat.label}</span>
+                    <span className="tab-badge">{cat.count}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="toolbar-right">
+              {/* Search Box */}
+              <div className="project-search-box">
+                <span className="search-icon" aria-hidden="true">🔍</span>
+                <input
+                  type="text"
+                  placeholder="Search project, location, client..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  aria-label="Search projects"
+                />
+                {searchQuery && (
+                  <button className="search-clear-btn" onClick={() => setSearchQuery('')} aria-label="Clear search">×</button>
+                )}
+              </div>
+
+              {/* Sort Selector */}
+              <select
+                className="project-sort-select"
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                aria-label="Sort projects"
+              >
+                <option value="area-desc">Largest Area First</option>
+                <option value="area-asc">Smallest Area First</option>
+                <option value="sl-asc">Official List Order (SL. No)</option>
+              </select>
+
+              {/* View Switcher Toggle */}
+              <div className="view-toggle" role="group" aria-label="Select view mode">
+                <button
+                  className={`toggle-btn ${viewMode === 'grid' ? 'active' : ''}`}
+                  onClick={() => setViewMode('grid')}
+                  title="Grid View"
+                  aria-pressed={viewMode === 'grid'}
+                >
+                  <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor">
+                    <rect x="1" y="1" width="6" height="6" rx="1"/>
+                    <rect x="9" y="1" width="6" height="6" rx="1"/>
+                    <rect x="1" y="9" width="6" height="6" rx="1"/>
+                    <rect x="9" y="9" width="6" height="6" rx="1"/>
+                  </svg>
+                  <span>Cards</span>
+                </button>
+                <button
+                  className={`toggle-btn ${viewMode === 'table' ? 'active' : ''}`}
+                  onClick={() => setViewMode('table')}
+                  title="Official Table View"
+                  aria-pressed={viewMode === 'table'}
+                >
+                  <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor">
+                    <rect x="1" y="2" width="14" height="2" rx="0.5"/>
+                    <rect x="1" y="7" width="14" height="2" rx="0.5"/>
+                    <rect x="1" y="12" width="14" height="2" rx="0.5"/>
+                  </svg>
+                  <span>Official Table</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Result Count Banner */}
+          <div className="results-status-bar">
+            <span>Showing <strong>{filteredProjects.length}</strong> of <strong>{ggaProjects.length}</strong> projects</span>
+            <span className="results-total-area">Filtered Cumulative Area: <strong>{totalFilteredArea.toLocaleString('en-IN')} SQ.FT</strong></span>
+          </div>
+
+          {/* VIEW MODE 1: GRID VIEW */}
+          {viewMode === 'grid' && (
+            <div className="projects-card-grid">
+              {filteredProjects.map((project) => (
+                <article className="portfolio-card" key={project.id}>
+                  {/* Top Bar */}
+                  <div className="card-header-bar">
+                    <span className="project-sl-pill">#{String(project.slNo).padStart(2, '0')}</span>
+                    <span className={`project-cat-badge cat-${project.category.toLowerCase()}`}>
+                      {project.category}
+                    </span>
+                    {project.featured && <span className="featured-flag">★ Landmark</span>}
+                  </div>
+
+                  {/* Title & Client */}
+                  <h3 className="card-title">{project.title}</h3>
+                  <div className="card-client-row">
+                    <span className="client-marker">Client:</span>
+                    <strong>{project.client}</strong>
+                  </div>
+
+                  {/* Location & Area Highlight */}
+                  <div className="card-location-row">
+                    <span className="location-pin" aria-hidden="true">📍</span>
+                    <span>{project.location}</span>
+                  </div>
+
+                  <div className="area-highlight-box">
+                    <span className="area-label">BUILT-UP AREA</span>
+                    <strong className="area-val">{project.area_sqft} <small>SQ.FT</small></strong>
+                  </div>
+
+                  {/* Description */}
+                  <p className="card-desc">{project.description}</p>
+
+                  {/* Scope Badges */}
+                  <div className="card-scope-list">
+                    {project.scope.map((s) => (
+                      <span className="scope-tag" key={s}>{s}</span>
+                    ))}
+                  </div>
+
+                  {/* Card Action Footer */}
+                  <div className="card-action-footer">
+                    <span className="project-status-dot">
+                      <i></i> {project.status}
+                    </span>
+                    <Link className="project-inquire-link" to="/contact-us">
+                      Inquire Scope ↗
+                    </Link>
+                  </div>
+                </article>
+              ))}
+            </div>
+          )}
+
+          {/* VIEW MODE 2: OFFICIAL TABLE VIEW */}
+          {viewMode === 'table' && (
+            <div className="table-responsive-container">
+              <table className="official-projects-table" aria-label="GGA Current Projects List">
+                <thead>
+                  <tr>
+                    <th scope="col" className="col-sl">SL, NO</th>
+                    <th scope="col" className="col-desc">PROJECT DETAILS & CLIENT</th>
+                    <th scope="col" className="col-cat">SECTOR</th>
+                    <th scope="col" className="col-loc">LOCATION</th>
+                    <th scope="col" className="col-scope">SERVICES SCOPE</th>
+                    <th scope="col" className="col-area">AREA IN SQ.FT</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredProjects.map((project) => (
+                    <tr key={project.id} className={project.featured ? 'row-featured' : ''}>
+                      <td className="cell-sl">
+                        <span className="table-sl-badge">{project.slNo}</span>
+                      </td>
+                      <td className="cell-details">
+                        <strong className="table-project-title">{project.title}</strong>
+                        <div className="table-client-sub">
+                          <span>Client: <strong>{project.client}</strong></span>
+                          {project.featured && <span className="table-landmark-tag">Landmark</span>}
+                        </div>
+                      </td>
+                      <td className="cell-cat">
+                        <span className={`table-cat-pill cat-${project.category.toLowerCase()}`}>
+                          {project.category}
+                        </span>
+                      </td>
+                      <td className="cell-loc">
+                        <span className="table-loc-text">📍 {project.location}</span>
+                      </td>
+                      <td className="cell-scope">
+                        <div className="table-scope-tags">
+                          {project.scope.map((s) => (
+                            <span key={s}>{s}</span>
+                          ))}
+                        </div>
+                      </td>
+                      <td className="cell-area">
+                        <span className="table-area-number">{project.area_sqft}</span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+                <tfoot>
+                  <tr>
+                    <td colSpan="5" className="table-total-label">
+                      TOTAL CUMULATIVE AREA ({filteredProjects.length} Projects)
+                    </td>
+                    <td className="table-total-value">
+                      {totalFilteredArea.toLocaleString('en-IN')} SQ.FT
+                    </td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          )}
+
+          {/* Bottom Consultation CTA Banner */}
+          <div className="projects-bottom-cta">
+            <div className="cta-left">
+              <span className="cta-kicker">HAVE A RESIDENTIAL, INDUSTRIAL OR COMMERCIAL PROJECT?</span>
+              <h2>Ready to engineer clash-free building systems?</h2>
+              <p>
+                From 25,000 sq.ft civic centers to 15,00,000 sq.ft industrial campuses, GGA provides coordinated plumbing, electrical, firefighting, and HVAC designs with on-site engineering support.
+              </p>
+            </div>
+            <div className="cta-actions">
+              <Link className="btn btn-yellow" to="/contact-us">Discuss your project scope ↗</Link>
+              <a className="btn btn-outline" href={WA} target="_blank" rel="noreferrer">Quick WhatsApp Chat ↗</a>
+            </div>
+          </div>
+
+        </div>
+      </section>
+    </div>
+  );
+}
 
 function ContentPage() {
   const { slug } = useParams();
+  if (slug === 'projects') {
+    return <ProjectsPage />;
+  }
   const fallback = FALLBACK[slug] || FALLBACK['about-us'];
   const page = useData(`/pages/${slug}`, fallback);
   useEffect(()=>{ document.title = page.seo_title || `${page.title} | GGA MEP Design Consultants`; const meta=document.querySelector('meta[name="description"]'); if(meta && page.seo_description) meta.content=page.seo_description; },[page,slug]);
   const services = useData('/services', []);
-  const projects = useData('/projects', []);
   return <><section className="page-hero"><EngineeringBackground variant="page"/><div className="container page-hero-inner"><div><span className="eyebrow"><span className="dot"></span> GGA DESIGN CONSULTANTS</span><h1>{page.title}</h1><p>{page.subtitle}</p></div><PencilMark/></div></section>
     <section className="section"><EngineeringBackground variant="light"/><div className="container content-layout"><div className="content-main"><span className="eyebrow dark">GET GREAT ADVICE</span><h2>{page.subtitle}</h2><p className="body-copy">{page.body}</p>
       {slug==='services' && <>
@@ -494,7 +992,6 @@ function ContentPage() {
           <Link className="btn btn-yellow" to="/contact-us">Discuss your project ↗</Link>
         </section>
       </>}
-      {slug==='projects' && <div className="project-list">{(projects.length?projects:defaultProjects).map((p,i)=><article key={p.id||p.title}><span>{String(i+1).padStart(2,'0')}</span><div><h3>{p.title}</h3><p>{p.location}{p.area_sqft?' · '+p.area_sqft+' sq.ft':''}</p>{p.description&&<p>{p.description}</p>}</div></article>)}</div>}
       {slug==='about-us' && <div className="detail-list">{['MEP design development coordination','Coordination with builders, architects and structural consultants','Site visits and meetings to support execution as per design','Technical clarifications and RFI clearance','Specification finalisation and tender coordination','GFC drawing issuance in soft and hard copy','Review of vendor shop and GA drawings'].map((x,i)=><article key={x}><span className="detail-num">0{i+1}</span><div><h3>{x}</h3><p>Project-specific support agreed according to scope, programme and applicable requirements.</p></div></article>)}</div>}
     </div><aside className="contact-card"><span className="eyebrow">LET'S TALK</span><h3>Have a project in mind?</h3><p>Tell us about your building and MEP design requirements.</p><Link className="btn btn-yellow" to="/contact-us">Contact GGA ↗</Link><div className="aside-rule"></div><p className="aside-contact">✉ <a href="mailto:ggamepconsultant@gmail.com">ggamepconsultant@gmail.com</a></p><p className="aside-contact">☎ <a href="tel:+918489274385">+91 8489274385</a></p></aside></div></section>
   </>;
@@ -643,5 +1140,5 @@ function FloatingActions({ settings }) {
 
 export default function App() {
  const settings=useData('/settings',{});
- return <><Header settings={settings}/><main><Routes><Route path="/" element={<Home/>}/><Route path="/about-us" element={<ContentPage/>}/><Route path="/services" element={<ContentPage/>}/><Route path="/projects" element={<ContentPage/>}/><Route path="/contact-us" element={<Contact/>}/></Routes></main><Footer settings={settings}/><FloatingActions settings={settings}/></>;
+ return <><Header settings={settings}/><main><Routes><Route path="/" element={<Home/>}/><Route path="/about-us" element={<ContentPage/>}/><Route path="/services" element={<ContentPage/>}/><Route path="/projects" element={<ProjectsPage/>}/><Route path="/contact-us" element={<Contact/>}/></Routes></main><Footer settings={settings}/><FloatingActions settings={settings}/></>;
 }
