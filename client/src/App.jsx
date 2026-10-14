@@ -392,21 +392,6 @@ function TestimonialsSection() {
           ))}
         </div>
 
-        {/* Clean Client Logos Trust Strip */}
-        <div className="clients-trust-block">
-          <div className="clients-trust-header">
-            <span>TRUSTED BY LEADING BUILDERS & DEVELOPERS</span>
-          </div>
-          <div className="clients-logo-grid">
-            {clientLogos.map((client) => (
-              <div className="clean-client-item" key={client.name}>
-                <img src={client.src} alt={`${client.name} logo`} loading="lazy" />
-                <span className="client-hover-name">{client.name}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-
         {/* Bottom CTA Card */}
         <div className="testimonials-cta-card">
           <div className="cta-content">
@@ -557,8 +542,66 @@ function Contact() {
  </>;
 }
 
-function Footer({settings}) {
- return <footer className="footer"><div className="footer-client-marquee" aria-label="GGA client logos carousel"><div className="footer-client-track">{[...clientLogos, ...clientLogos].map((logo, index) => <div className="footer-client-logo" key={`${logo.name}-footer-${index}`}><img src={logo.src} alt={index < clientLogos.length ? `${logo.name} logo` : ''} aria-hidden={index >= clientLogos.length ? 'true' : undefined} loading="lazy" /></div>)}</div></div><div className="container footer-main"><div><Link to="/" className="brand footer-brand" aria-label="GGA home"><img src="/images/gga-logo.jpg" alt="GGA - GET GREAT ADVICE" className="brand-logo-img footer-logo-img" /></Link><p>MEP design consultants supporting coordinated building-services design.</p></div><div><h4>EXPLORE</h4><Link to="/about-us">About Us</Link><Link to="/services">Services</Link><Link to="/projects">Projects</Link><Link to="/contact-us">Contact</Link></div><div><h4>GET IN TOUCH</h4><a href="mailto:ggamepconsultant@gmail.com">{settings.contact_email||'ggamepconsultant@gmail.com'}</a><a href="tel:+918489274385">{settings.contact_phone||'+91 8489274385'}</a><a href={WA} target="_blank" rel="noreferrer">WhatsApp ↗</a></div></div><div className="container footer-bottom"><span>© {new Date().getFullYear()} GGA Design Consultants</span><span>*Experience statement based on the company profile; verify before publishing.</span></div></footer>;
+function Footer({ settings }) {
+  return (
+    <footer className="footer">
+      <div className="footer-clients-bar">
+        <div className="container footer-clients-header">
+          <div className="clients-header-left">
+            <div>
+              <span className="clients-kicker-dot"></span>
+              <span className="clients-kicker-text">OUR ESTEEMED CLIENTS & DEVELOPERS</span>
+            </div>
+            <h4 className="clients-header-title">Trusted by India’s Premier Builders & Developers</h4>
+          </div>
+          <div className="clients-header-right">
+            <span className="clients-badge-pill">
+              <strong>100+</strong> Projects Coordinated
+            </span>
+          </div>
+        </div>
+
+        <div className="footer-marquee-wrapper" aria-label="GGA client logos carousel">
+          <div className="footer-marquee-track">
+            {[...clientLogos, ...clientLogos, ...clientLogos].map((logo, index) => (
+              <div className="premium-client-card" key={`${logo.name}-footer-${index}`}>
+                <div className="client-logo-stage">
+                  <img src={logo.src} alt={`${logo.name} logo`} loading="lazy" />
+                </div>
+                <span className="client-brand-name">{logo.name}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="container footer-main">
+        <div>
+          <Link to="/" className="brand footer-brand" aria-label="GGA home">
+            <img src="/images/gga-logo.jpg" alt="GGA - GET GREAT ADVICE" className="brand-logo-img footer-logo-img" />
+          </Link>
+          <p>MEP design consultants supporting coordinated building-services design.</p>
+        </div>
+        <div>
+          <h4>EXPLORE</h4>
+          <Link to="/about-us">About Us</Link>
+          <Link to="/services">Services</Link>
+          <Link to="/projects">Projects</Link>
+          <Link to="/contact-us">Contact</Link>
+        </div>
+        <div>
+          <h4>GET IN TOUCH</h4>
+          <a href="mailto:ggamepconsultant@gmail.com">{settings.contact_email || 'ggamepconsultant@gmail.com'}</a>
+          <a href="tel:+918489274385">{settings.contact_phone || '+91 8489274385'}</a>
+          <a href={WA} target="_blank" rel="noreferrer">WhatsApp ↗</a>
+        </div>
+      </div>
+      <div className="container footer-bottom">
+        <span>© {new Date().getFullYear()} GGA Design Consultants</span>
+        <span>*Experience statement based on the company profile; verify before publishing.</span>
+      </div>
+    </footer>
+  );
 }
 
 function FloatingActions({ settings }) {
